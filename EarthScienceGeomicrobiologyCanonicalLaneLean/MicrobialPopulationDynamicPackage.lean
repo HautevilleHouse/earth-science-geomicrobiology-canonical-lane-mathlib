@@ -23,16 +23,18 @@ def MicrobialPopulationDynamicClosed (P : MicrobialPopulationDynamicPackage) : P
 theorem microbial_population_dynamic_closed_from_evidence
     (P : MicrobialPopulationDynamicPackage) (E : MicrobialPopulationDynamicEvidence P) :
     MicrobialPopulationDynamicClosed P := by
-  exact And.intro E.carryingCapacityBounded (by
-    have h1 := E.logisticGrowthTerm
-    have h2 := E.nutrientLimitationTerm
-    exact And.intro (by
-      have : P.growthRate (0) > 0 := by
-        sorry
-      exact this) (by
-      have : P.deathRate (0) > 0 := by
-        sorry
-      exact this))
+  refine And.intro E.carryingCapacityBounded ?_
+  have hGrowth : P.growthRate (0) > 0 := by
+    -- from logisticGrowthTerm, we can derive positivity
+    have : P.growthRate (0) > 0 := by
+      exact E.logisticGrowthTerm
+    exact this
+  have hDeath : P.deathRate (0) > 0 := by
+    -- from nutrientLimitationTerm, we can derive positivity
+    have : P.deathRate (0) > 0 := by
+      exact E.nutrientLimitationTerm
+    exact this
+  exact And.intro hGrowth hDeath
 
 end EarthScienceGeomicrobiologyCanonicalLaneLean
 end HautevilleHouse
